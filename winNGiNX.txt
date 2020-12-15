@@ -1,0 +1,38 @@
+
+Known issues
+Potential future improvements
+The Windows version of nginx uses the native Win32 API (not Cygwin emulation). Currently (1.15.9) is select()also used as connection handling methods poll(), so one should not expect high performance and scalability. Because of this and a number of other known issues, the Windows version of nginx is still considered a beta version. At the moment, almost all the functionality that is available in the UNIX version of nginx is available in it, with the exception of the XSLT filter, image filter, GeoIP module and the embedded Perl language.
+
+To install nginx / Windows, download the latest major distribution (1.19.2), since the nginx master contains all known fixes. Then unpack the distribution, change to the nginx-1.19.2 directory and run nginx. Here's an example for the root directory on drive C:
+
+cd c: \
+unzip nginx-1.19.2.zip
+cd nginx-1.19.2
+start nginx
+To see the nginx processes, run the command line utility tasklist:
+
+C: \ nginx-1.19.2> tasklist / fi "imagename eq nginx.exe"
+
+Image Name PID Session Name Session # Mem Usage
+=============== ======== ========================= === =========
+nginx.exe 652 Console 0 2 780 K
+nginx.exe 1332 Console 0 3 112 K
+One of the processes is in charge, the other is a worker. If nginx does not start, you need to look for the reason in the error log file logs\error.log. If the log file was not created, then the reason for this should be looked for in the Windows Event Log. If an error page is displayed instead of the expected page, you should also look for the causes of the error in the file logs\error.log.
+
+nginx / Windows uses the directory it was started in as a prefix for relative paths in configuration. In the above example, the prefix is C:\nginx-1.19.2\. The paths in the configuration file must be UNIX-style using forward slashes:
+
+access_log logs / site.log;
+root C: / web / html;
+nginx / Windows works like a standard console application (not a service) and is controlled using the following commands:
+
+nginx -s stop	quick completion
+nginx -s quit	smooth completion
+nginx -s reload	change configuration, start new workflows with new configuration, smoothly shutdown old workflows
+nginx -s reopen	reopening log files
+Known Issues
+Although it is possible to start several worker processes, only one of them actually works.
+UDP proxying is not supported.
+Possible future improvements
+Running as a service.
+Using I / O completion ports as a method for handling connections.
+Using multiple worker threads within a single worker process.
